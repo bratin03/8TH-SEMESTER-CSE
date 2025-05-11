@@ -1,0 +1,1190 @@
+<META HTTP-EQUIV="expires" CONTENT="0">
+<html>
+
+<head>
+<style type="text/css">
+table {font-size: 100%;}
+</style>
+</head>
+
+<body
+text = "#000000"
+link="#00ff00"
+vlink="#f00000"
+bgcolor="#ffffff"
+>
+
+<H3>
+<HR>
+Using a <I>kd</I>-tree (for common multi-dim queries)
+<HR>
+</H3>
+<UL>
+<P>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* {box-sizing: border-box}
+body 
+<!--- {font-family: Verdana, sans-serif; margin:0}   ---- Cheung -->
+.mySlides {display: none}
+img {vertical-align: middle;}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1200px;
+  position: relative;
+  margin: auto;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text --- Originally: top: -35px;  Cheung */
+
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  top: -55px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+/* On smaller screens, decrease text size */
+@media only screen and (max-width: 300px) {
+  .prev, .next,.text {font-size: 11px}
+}
+
+text = "#000000"
+link="#00ff00"
+vlink="#f00000"
+bgcolor="#ffffff"
+</style>
+</head>
+
+<!-- ------------------------------------------------------------------- -->
+
+<body>
+
+
+
+<body
+text = "#000000"
+link="#00ff00"
+vlink="#f00000"
+bgcolor="#ffffff"
+>
+
+<HR>
+<HR>
+
+<P>
+&nbsp;
+<P>
+<FONT color="red"><B>Slideshow</B></FONT>:
+<!-- Slideshow container -->
+<div class="slideshow-container">
+
+  <!-- Full-width images with number and caption text -->
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+ 	</SPAN>
+     </B></FONT>
+     </div>
+
+    <center>
+    <img src="SLIDES/pic501.png" style="width:70%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 1.2in">
+  </div>
+
+
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+	- <FONT color="blue">Example</FONT>
+ 	</SPAN>
+     </B></FONT>
+     </div>
+   <p style="margin-left: 1.2in">
+    <FONT color="red"><B>Find</B></FONT>
+    all <FONT color="blue"><B>data records</B></FONT> with 
+    <FONT color="red"><B>age = 50</B></FONT>
+    </p>
+    &nbsp;
+    <center>
+    <img src="FIGS/KD-tree/kd-tree06b.gif" style="width:55%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 0.8in">
+  </div>
+
+
+
+
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+	- <FONT color="blue">Example</FONT>
+ 	</SPAN>
+     </B></FONT>
+     </div>
+   <p style="margin-left: 1.2in">
+    <FONT color="red"><B>Find</B></FONT>
+    all <FONT color="blue"><B>data records</B></FONT> with 
+    <FONT color="red"><B>age = 50</B></FONT>
+    </p>
+    &nbsp;
+    <center>
+    <img src="FIGS/KD-tree/kd-tree06a.gif" style="width:55%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 0.8in">
+  </div>
+
+
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+	- <FONT color="blue">Example</FONT>
+ 	</SPAN>
+     </B></FONT>
+     </div>
+   <p style="margin-left: 1.2in">
+    <FONT color="red"><B>Find</B></FONT>
+    all <FONT color="blue"><B>data records</B></FONT> with 
+    <FONT color="red"><B>age = 50</B></FONT>
+    </p>
+    &nbsp;
+    <center>
+    <img src="FIGS/KD-tree/kd-tree06c.gif" style="width:55%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 0.8in">
+  </div>
+
+
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+	- <FONT color="blue">Example</FONT>
+ 	</SPAN>
+     </B></FONT>
+     </div>
+   <p style="margin-left: 1.2in">
+    <FONT color="red"><B>Find</B></FONT>
+    all <FONT color="blue"><B>data records</B></FONT> with 
+    <FONT color="red"><B>age = 50</B></FONT>
+    </p>
+    &nbsp;
+    <center>
+    <img src="FIGS/KD-tree/kd-tree06d.gif" style="width:57%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 0.8in">
+  </div>
+
+
+
+  <div class="mySlides">
+    <div class="text">
+	<FONT color="red" size=+1><B>
+	<SPAN style="BACKGROUND-COLOR: yellow">
+        Answering Partial Match queries using a <I>kd</I>-tree index
+	- <FONT color="blue">Example</FONT>
+ 	</SPAN>
+     </B></FONT>
+     </div>
+   <p style="margin-left: 1.2in">
+    <FONT color="red"><B>Find</B></FONT>
+    all <FONT color="blue"><B>data records</B></FONT> with 
+    <FONT color="red"><B>age = 50</B></FONT>
+    </p>
+    &nbsp;
+    <center>
+    <img src="FIGS/KD-tree/kd-tree06e.gif" style="width:59%">
+    </center>
+    <p style="margin-left: 2in">
+    </p>
+    <p style="padding: 0.8in">
+  </div>
+
+
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Analysis: how efficient is the <I>kd</I>-tree for Partial Match queries ?
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <center>
+  <img src="SLIDES/pic502.png" style="width:70%">
+  </center>
+  <p style="margin-left: 1.6in">
+  <B>Partial Match query:</B> &nbsp;&nbsp;
+  <FONT color="red"><B>Find</B></FONT> all
+   <FONT color="blue"><B>"yellow" key value < C</B></FONT>
+  </p>
+  <p style="padding: 1.0in"></p>
+</div>
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Analysis: how efficient is the <I>kd</I>-tree for Partial Match queries ?
+   </SPAN>
+   </B></FONT>
+  </div>
+  <p style="margin-left: 1.6in">
+  <B>Partial Match query:</B> &nbsp;&nbsp;
+  <FONT color="red"><B>Find</B></FONT> all
+   <FONT color="blue"><B>"yellow" key value < C</B></FONT>
+  </p>
+   &nbsp;
+  <center>
+  <img src="SLIDES/pic503.png" style="width:45%">
+  </center>
+   &nbsp;
+  <center>
+  <img src="FIGS/KD-tree/slide01b.gif" style="width:60%">
+  </center>
+  <p style="padding: 0.9in"></p>
+</div>
+
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Analysis: how efficient is the <I>kd</I>-tree for Partial Match queries ?
+   </SPAN>
+   </B></FONT>
+  </div>
+  <p style="margin-left: 1.6in">
+  <B>Partial Match query:</B> &nbsp;&nbsp;
+  <FONT color="red"><B>Find</B></FONT> all
+   <FONT color="blue"><B>"yellow" key value < C</B></FONT>
+  </p>
+   &nbsp;
+  <center>
+  <img src="SLIDES/pic504.png" style="width:50%">
+  </center>
+   &nbsp;
+  <center>
+  <img src="FIGS/KD-tree/slide01c.gif" style="width:60%">
+  </center>
+ &nbsp;
+   <p style="margin-left: 2in">
+   <FONT color="red"><B>And so on</B></FONT>...
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Analysis: how efficient is the <I>kd</I>-tree for Partial Match queries ?
+   </SPAN>
+   </B></FONT>
+  </div>
+    &nbsp;
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Conclussion:</B></FONT>
+  </p>
+
+  <center>
+  <img src="SLIDES/pic505.png" style="width:70%">
+  </center>
+
+   <p style="margin-left: 2in">
+   
+  </p>
+  <p style="padding: 0.4in"></p>
+</div>
+
+
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+   Answering  Range queries using a <I>kd</I>-tree index 
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <center>
+  <img src="SLIDES/pic506.png" style="width:65%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 1.1in"></p>
+</div>
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering Range queries using a kd-tree index -
+     <FONT color="blue">Example</FONT>
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Find</B></FONT>
+      <FONT color="blue"><B> records</B></FONT> with
+  <FONT color="red"><B> 35 < age < 50</B></FONT> and
+  <FONT color="blue"><B>50 < salary < 100</B></FONT>
+  </p>
+  <center>
+  <img src="FIGS/KD-tree/slide02a.gif" style="width:60%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering Range queries using a kd-tree index -
+     <FONT color="blue">Example</FONT>
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Find</B></FONT>
+      <FONT color="blue"><B> records</B></FONT> with
+  <FONT color="red"><B> 35 < age < 50</B></FONT> and
+  <FONT color="blue"><B>50 < salary < 100</B></FONT>
+  </p>
+  <center>
+  <img src="FIGS/KD-tree/slide02b.gif" style="width:60%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering Range queries using a kd-tree index -
+     <FONT color="blue">Example</FONT>
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Find</B></FONT>
+      <FONT color="blue"><B> records</B></FONT> with
+  <FONT color="red"><B> 35 < age < 50</B></FONT> and
+  <FONT color="blue"><B>50 < salary < 100</B></FONT>
+  </p>
+  <center>
+  <img src="FIGS/KD-tree/slide02c.gif" style="width:60%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering Range queries using a kd-tree index -
+     <FONT color="blue">Example</FONT>
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Find</B></FONT>
+      <FONT color="blue"><B> records</B></FONT> with
+  <FONT color="red"><B> 35 < age < 50</B></FONT> and
+  <FONT color="blue"><B>50 < salary < 100</B></FONT>
+  </p>
+  <center>
+  <img src="FIGS/KD-tree/slide02d.gif" style="width:60%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering Range queries using a kd-tree index -
+     <FONT color="blue">Example</FONT>
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <p style="margin-left: 1.2in">
+  <FONT color="red"><B>Find</B></FONT>
+      <FONT color="blue"><B> records</B></FONT> with
+  <FONT color="red"><B> 35 < age < 50</B></FONT> and
+  <FONT color="blue"><B>50 < salary < 100</B></FONT>
+  </p>
+  <center>
+  <img src="FIGS/KD-tree/slide02.gif" style="width:60%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 0.6in"></p>
+</div>
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering "Nearest Neighbor" queries using a kd-tree index
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <center>
+  <img src="SLIDES/pic507.png" style="width:65%">
+  </center>
+  <p style="margin-left: 1.5in">
+   (It's
+   <SPAN style="BACKGROUND-COLOR: yellow">
+   <FONT color="red"><B>very difficult</B></FONT> to
+   <FONT color="blue"><B>prune off branches</B></FONT></SPAN>
+   in a <FONT color="red"><B><I>kd</I>-tree</B></FONT> using
+   a <FONT color="blue"><B>nearest neighbor candidate</B></FONT>)
+  </p>
+  <p style="padding: 0.5in"></p>
+</div>
+
+
+
+
+<div class="mySlides">
+  <div class="text">
+   <FONT color="red" size=+1><B>
+   <SPAN style="BACKGROUND-COLOR: yellow">
+     Answering "Nearest Neighbor" queries using a kd-tree index
+   </SPAN>
+   </B></FONT>
+  </div>
+
+  <center>
+  <img src="SLIDES/pic508.png" style="width:43%">
+  </center>
+  <p style="margin-left: 2in">
+  </p>
+  <p style="padding: 2.2in"></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+<!------------------------------------------------------------------->
+
+
+<!-- The dots/circles -->
+<div style="text-align:center">
+  <span class="dot" onclick="currentSlide(1)"></span>
+  <span class="dot" onclick="currentSlide(2)"></span>
+  <span class="dot" onclick="currentSlide(3)"></span>
+  <span class="dot" onclick="currentSlide(4)"></span>
+  <span class="dot" onclick="currentSlide(5)"></span>
+  <span class="dot" onclick="currentSlide(6)"></span>
+  <span class="dot" onclick="currentSlide(7)"></span>
+  <span class="dot" onclick="currentSlide(8)"></span>
+  <span class="dot" onclick="currentSlide(9)"></span>
+  <span class="dot" onclick="currentSlide(10)"></span>
+  <span class="dot" onclick="currentSlide(11)"></span>
+  <span class="dot" onclick="currentSlide(12)"></span>
+  <span class="dot" onclick="currentSlide(13)"></span>
+  <span class="dot" onclick="currentSlide(14)"></span>
+  <span class="dot" onclick="currentSlide(15)"></span>
+  <span class="dot" onclick="currentSlide(16)"></span>
+  <span class="dot" onclick="currentSlide(17)"></span>
+  <span class="dot" onclick="currentSlide(18)"></span>
+</div> 
+
+
+
+
+
+
+
+  <!-- Next and previous buttons -->
+  <a class="prev" onclick="plusSlides(-1)">
+       <FONT size="+2" color="red"><B>&#10094;</B></FONT></a>
+  <a class="next" onclick="plusSlides(1)">
+       <FONT size="+2" color="red"><B>&#10095;</B></FONT></a>
+</div>
+<br>
+
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+</script>
+
+<P>
+<HR>
+<HR>
+<HR>
+<HR>
+<P>
+
+
+
+
+<P>
+<LI> <FONT COLOR="darkmagenta"><B>
+     Performance of the <I>kd</I>-tree for commonly used multi-dim. queries
+     </B></FONT>
+<P>
+<UL>
+
+
+
+
+
+<LI> <SPAN style="BACKGROUND-COLOR: yellow">
+     <FONT color="red"><B>Partial Match</B></FONT> queries
+     </SPAN>
+<P>
+<UL>
+<TABLE bgcolor="lightcyan" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> The <FONT color="blue"><B>query</B></FONT> specifies
+      <B>conditions</B> on 
+      <FONT color="red"><B><I>some</I> dimensions</B></FONT>
+      <B>but</B> 
+      <FONT color="blue"><B>not</B></FONT> on
+      <FONT color="red"><B><I>all</I> dimensions</B></FONT>
+
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<FONT color="red"><B>Search Algorithm:</B></FONT>
+<P>
+<UL>
+<TABLE bgcolor="#FFEEEE" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> For a <FONT color="blue"><B>dimension</B></FONT>
+      for which the <FONT color="red"><B>search value</B></FONT> is
+    <SPAN style="BACKGROUND-COLOR: yellow">
+      <FONT color="blue"><B><I>given</I> (= specified)</B></FONT></SPAN>:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="blue"><B>Take</B></FONT> the
+        (one) <FONT color="red"><B>branch</B></FONT> of the
+	<FONT color="blue"><B>subtree</B></FONT> for the
+	<B>search value</B>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<HR>
+<P>
+ <LI> For a <FONT color="red"><B>dimension</B></FONT>
+      for which the <FONT color="blue"><B>search value</B></FONT> is
+    <SPAN style="BACKGROUND-COLOR: yellow">
+      <FONT color="red"><B><I>not</I> given
+     (= <I>not</I> specified)</B></FONT>:</SPAN>
+<P>
+<UL>
+<TABLE bgcolor="#CCFFCC" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="blue"><B>Take</B></FONT> 
+	<SPAN style="BACKGROUND-COLOR: yellow">
+         <FONT color="red"><B><I>both</I> branches</B></FONT>
+	</SPAN>
+	 of the
+	<FONT color="blue"><B>subtree</B></FONT> !!!
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+ <B>Example:</B>
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> Find <B>all person</B></FONT> with
+       <FONT color="red"><B><I>age = 50</I></B></FONT>
+<P>
+<UL>
+<TABLE BORDER="5">
+
+<TR> <TD>
+<IMG SRC="FIGS/KD-tree/kd-tree06.gif"></IMG>
+</TD> </TR>
+
+</TABLE>
+</UL>
+<P>
+
+
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<HR>
+<HR>
+<P>
+<LI> <B>Analysis:</B> how <FONT color="red"><B>efficient</B></FONT> is
+     the <FONT color="blue"><B><I>kd</I>-tree</B></FONT> ?
+<P>
+<UL>
+<TABLE bgcolor="#CCFFCC" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <B>Assume</B> the <FONT color="blue"><B><I>kd</I>-tree</B></FONT>
+     is <FONT color="red"><B>perfectly balance</B></FONT>
+     (same <FONT color="blue"><B>height</B></FONT> everywhere).
+  <P>
+   There are <FONT color="blue"><B>2 dimensions</B></FONT>  and
+     there are <FONT color="red"><B>2n levels</B></FONT>:
+<P>
+<UL>
+<TABLE BORDER="5">
+
+<TR> <TD>
+<IMG SRC="FIGS/KD-tree/slide01a.gif"></IMG>
+</TD> </TR>
+
+</TABLE>
+</UL>
+<P>
+<HR>
+<P>
+<LI> At <FONT color="blue"><B>level 1</B></FONT>, we can
+      <FONT color="red"><B>eliminate</B></FONT>
+        <FONT color="blue"><B> half</B></FONT> of
+      <B>all records</B>:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI>  We need 
+     only
+     to <FONT color="blue"><B>process</B></FONT>
+     <FONT color="red"><B>1/2</B></FONT> of
+     <B>all records</B>
+     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+  
+<P>
+<HR>
+<P>
+<LI> At <FONT color="blue"><B>level 3</B></FONT>, we can
+      <FONT color="red"><B>eliminate</B></FONT>
+        <FONT color="blue"><B><I>another</I> half</B></FONT> of
+      <B>all <I>remaining</I> records</B>:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI>   We need 
+     only
+     to <FONT color="blue"><B>process</B></FONT>
+    <FONT color="red"><B>1/4</B></FONT> of
+     <B>all records</B>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+  
+<P>
+<HR>
+<P>
+<LI> At <FONT color="blue"><B>level 5</B></FONT>, we can
+      <FONT color="red"><B>eliminate</B></FONT>
+        <FONT color="blue"><B><I>another</I> half</B></FONT> of
+      <B>all <I>remaining</I> records</B>:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI>   We need 
+     only
+     to <FONT color="blue"><B>process</B></FONT>
+    <FONT color="red"><B>1/8</B></FONT> of
+     <B>all records</B>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<FONT color="red"><B>And so on !!!</B></FONT>
+<P>
+<HR>
+<HR>
+<HR>
+<P>
+<LI> <FONT color="red"><B>If</B></FONT> we
+      have <FONT color="blue"><B>2n &nbsp; levels</B></FONT>
+   in the <FONT color="red"><B>kd-tree</B></FONT>:
+<P>
+<UL>
+<TABLE bgcolor="#FFEEEE" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI>   We need 
+     <FONT color="red"><B>only</B></FONT>
+     to <FONT color="blue"><B>process</B></FONT>
+    <FONT color="red"><B>(1/2)<sup>n</sup></B></FONT> of
+     <B>all records</B>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<B>Example:</B>
+   a <FONT color="red"><B>4 (= 2<sup>2</sup>) level</B></FONT>
+  <FONT color="blue"><B>kd-tree</B></FONT>:
+<P>
+<UL>
+<TABLE BORDER="5">
+
+<TR> <TD>
+<IMG SRC="FIGS/KD-tree/kd-tree07a.gif"></IMG>
+</TD> </TR>
+
+</TABLE>
+</UL>
+<P> 
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+<HR>
+<HR>
+<HR>
+<P>
+<LI> <SPAN style="BACKGROUND-COLOR: yellow">
+	<FONT color="red"><B>Range</B></FONT> queries
+	</SPAN>
+<P>
+<UL>
+<TABLE bgcolor="lightcyan" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> Find <FONT color="blue"><B>objects</B></FONT> that
+      are <B>located</B>
+      either <FONT color="red"><B><I>partial</I></B></FONT> or
+      <FONT color="red"><B><I>wholly</I></B></FONT> within
+      a <FONT color="blue"><B>certain range</B></FONT>
+
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<FONT color="red"><B>Search Algorithm:</B></FONT>
+<P>
+<UL>
+<TABLE bgcolor="#FFEEEE" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> For the <FONT color="blue"><B>search range</B></FONT> is
+	<SPAN style="BACKGROUND-COLOR: yellow">
+       <FONT color="red"><B><I>completely</I> contained</B></FONT>
+	</SPAN>
+       by the <FONT color="blue"><B><I>left</I> subtree</B></FONT>, then:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="blue"><B>Take</B></FONT> <B><I>only</I></B> the
+         <FONT color="red"><B><I>left</I> branch</B></FONT> of the
+	<FONT color="blue"><B>subtree</B></FONT> for the
+	<B>search value</B>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<HR>
+<P>
+ <LI> For the <FONT color="blue"><B>search range</B></FONT> is
+	<SPAN style="BACKGROUND-COLOR: yellow">
+       <FONT color="red"><B><I>completely</I> contained</B></FONT>
+	</SPAN>
+       by the <FONT color="blue"><B><I>right</I> subtree</B></FONT>, then:
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="blue"><B>Take</B></FONT> <B><I>only</I></B> the
+         <FONT color="red"><B><I>right</I> branch</B></FONT> of the
+	<FONT color="blue"><B>subtree</B></FONT> for the
+	<B>search value</B>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<HR>
+<P>
+<LI> <B>Otherwise</B>
+     (the <FONT color="blue"><B>search range</B></FONT> 
+	<SPAN style="BACKGROUND-COLOR: yellow">
+       <FONT color="red"><B><I>straddles</I> </B></FONT>
+      at the <B>search value</B>
+	</SPAN>):
+<P>
+<UL>
+<TABLE bgcolor="#CCFFCC" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <B>Search</B> 
+	<SPAN style="BACKGROUND-COLOR: yellow">
+	<FONT color="red"><B><I>both</I> subtrees</B></FONT>
+	</SPAN>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+<B>Example:</B>
+<P>
+<UL>
+<TABLE BORDER="5">
+
+<TR> <TD>
+<IMG SRC="FIGS/KD-tree/kd-tree08.gif"></IMG>
+</TD> </TR>
+
+</TABLE>
+</UL>
+<P>
+
+<P>
+<HR>
+<P>
+
+
+
+<P>
+<HR>
+<HR>
+<HR>
+<P>
+<LI> <SPAN style="BACKGROUND-COLOR: yellow">
+	<FONT color="red"><B>Nearest neighbor</B></FONT> queries:
+	</SPAN>
+<P>
+<UL>
+<TABLE bgcolor="#FFEEEE" BORDER="5">
+<TR> <TD>
+
+ <UL>
+
+<P>
+ <LI> <FONT color="red"><B>Not easy</B></FONT> to 
+    <FONT color="blue"><B>to find</B></FONT>
+     the
+    <FONT color="red"><B>nearest neighbor</B></FONT> 
+    using a <FONT color="blue"><B><I>kd</I>-tree</B></FONT> index:
+<P>
+<UL>
+<TABLE BORDER="5">
+
+<TR> <TD>
+<IMG SRC="FIGS/KD-tree/kd-tree02e.gif"></IMG>
+</TD> </TR>
+
+</TABLE>
+</UL>
+<P>
+
+<P>
+It requires  <FONT color="red"><B><I>up</I> and <I>down</I></B></FONT>
+      <FONT color="blue"><B>traversal/search</B></FONT>
+    in the <FONT color="red"><B>kd-tree</B></FONT>.....
+ <P>
+
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+<HR>
+<HR>
+<HR>
+<P>
+<LI> <SPAN style="BACKGROUND-COLOR: yellow">
+	<FONT color="red"><B>Where-am-I</B></FONT> queries:
+	</SPAN>
+<P>
+<P>
+<UL>
+<TABLE bgcolor="lightcyan" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="red"><B>Not applicable:</B></FONT>
+<P>
+<UL>
+<TABLE bgcolor="lightyellow" BORDER="5">
+<TR> <TD>
+
+ <UL>
+ <LI> <FONT color="blue"><B>KD-tree</B></FONT> can
+  <B><I>only</I></B> stores
+    <FONT color="red"><B>points</B></FONT>
+ <P>
+ <LI> <FONT color="red"><B>Cannot</B></FONT> store
+      <FONT color="blue"><B>objects</B></FONT>
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+
+ </UL>
+
+</TD> </TR>
+</TABLE>
+</UL>
+<P>
+
+
+
+
+
+</UL>
+
+
+
+
+
+
+
+<P>
+</UL>
+<P>
+<HR>
+<HR>
+<HR>
+<HR>
+

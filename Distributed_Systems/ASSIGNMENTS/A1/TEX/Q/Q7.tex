@@ -1,0 +1,78 @@
+\section{Problem 7}\label{prob7}
+
+This section describes the protocol for constructing a Depth-First Search (DFS) spanning tree in a network. The protocol uses a DFS traversal approach, with tie-breaking based on root node IDs in cases of concurrent initiation. Specifically, if multiple nodes initiate the process simultaneously, a node joins the tree rooted at the highest ID node in case of a conflict. The protocol employs the following message types and rules.
+
+\subsection{Node Data Structure}
+Each node in the network maintains the following data:
+\begin{itemize}
+    \item \textbf{Parent}: Initially set to \texttt{null}. (Represents the parent node in the DFS tree.)
+    \item \textbf{MyRoot}: Initially set to \texttt{null}. (Represents the root node of the DFS tree.)
+    \item \textbf{Children}: An initially empty list to store child nodes. (These are nodes that have accepted the tree edge from the current node.)
+    \item \textbf{Neighbors}: A list of adjacent nodes. (Represents the set of nodes directly connected to the current node.)
+    \item \textbf{Unknown}: Initially set to the list of neighbors. (Represents nodes whose status is unknown i.e not yet visited in the DFS traversal.)
+\end{itemize}
+
+\subsection{Message Types}
+The protocol uses the following message types:
+\begin{itemize}
+    \item \texttt{QUERY(id)}: Sent by a node to its neighbors to invite them to join the DFS tree rooted at the node with ID \texttt{id}.
+    \item \texttt{ACCEPT(id)}: Sent by a node to its parent to confirm the acceptance of the tree edge. The \texttt{id} field contains the root node's ID.
+    \item \texttt{REJECT(id)}: Sent by a node to its parent to decline the tree edge. The \texttt{id} field contains the root node's ID.
+\end{itemize}
+
+The \texttt{QUERY} messages facilitate the continuation of the DFS traversal from the current node. The \texttt{REJECT} message serves to detect cycles during the tree construction process. The \texttt{ACCEPT} message confirms the acceptance of a tree edge and notifies the parent node that all its neighbors have been visited. 
+
+Additionally, if a node receives a \texttt{QUERY} message from a node with a higher root ID, it updates its tree membership to join the tree rooted at the higher ID node.
+
+\subsection{Message Handling Rules}
+
+\subsubsection{Handling a \texttt{QUERY} Message}
+When a node \(i\) receives a \texttt{QUERY(id)} message from a neighbor \(j\), it performs the following steps:
+\begin{enumerate}
+    \item If \texttt{MyRoot} is \texttt{null} or \texttt{id} is greater than \texttt{MyRoot}: (The current node should join the tree rooted at \texttt{id}.)
+    \begin{itemize}
+        \item Set \texttt{MyRoot} to \texttt{id}. (Update the root node.)
+        \item Set \texttt{Parent} to \(j\). (Set the parent node.)
+        \item Set \texttt{Unknown} to the list of neighbors excluding \(j\). (Initialize the unknown list.)
+        \item If \texttt{Unknown} is empty, send an \texttt{ACCEPT(id)} message to \(j\). (No unknown neighbors remain. So, accept the tree edge and notify the parent that DFS in the subtree is complete.)
+        \item Otherwise, send a \texttt{QUERY(id)} message to the first node in \texttt{Unknown} and remove it from \texttt{Unknown}. (Continue DFS traversal by querying the next unknown neighbor.)
+    \end{itemize}
+    \item If \texttt{id} equals \texttt{MyRoot}, send a \texttt{REJECT(id)} message to \(j\). (Reject the tree edge if the root ID matches the current root. The node is already part of the same tree.)
+    \item If \texttt{id} is less than \texttt{MyRoot}, ignore the message. (Reject the tree edge if the root ID is lower than the current root; the node is already part of a tree rooted at a higher ID.)
+\end{enumerate}
+
+\subsubsection{Handling an \texttt{ACCEPT} Message}
+When a node \(i\) receives an \texttt{ACCEPT(id)} message from a neighbor \(j\), it performs the following steps:
+\begin{enumerate}
+    \item If \texttt{MyRoot} is \texttt{id}:
+    \begin{itemize}
+        \item Add \(j\) to the \texttt{Children} list. (Update the list of children.)
+        \item If \texttt{Unknown} is empty:
+        \begin{itemize}
+            \item If \texttt{Parent} is \(i\), designate \(i\) as the root and terminate. (The current node is the root of the tree and all neighbors have been visited.)
+            \item Otherwise, send an \texttt{ACCEPT(id)} message to \texttt{Parent}. (Notify the parent that all neighbors have been visited in the subtree.)
+        \end{itemize}
+        \item Otherwise, send a \texttt{QUERY(id)} message to the first node in \texttt{Unknown} and remove it from \texttt{Unknown}. (Continue DFS traversal by querying the next unknown neighbor.)
+    \end{itemize}
+    \item If \texttt{MyRoot} is not \texttt{id}, ignore the message. (This node has changed tree membership after sending the \texttt{QUERY} message.)
+\end{enumerate}
+
+\subsubsection{Handling a \texttt{REJECT} Message}
+When a node \(i\) receives a \texttt{REJECT(id)} message from a child \(j\), it performs the following steps:
+\begin{enumerate}
+    \item If \texttt{MyRoot} is \texttt{id}:
+    \begin{itemize}
+        \item If \texttt{Unknown} is empty:
+        \begin{itemize}
+            \item If \texttt{Parent} is \(i\), designate \(i\) as the root and terminate. (The current node is the root of the tree and all neighbors have been visited.)
+            \item Otherwise, send an \texttt{ACCEPT(id)} message to \texttt{Parent}. (Notify the parent that all neighbors have been visited in the subtree.)
+        \end{itemize}
+        \item Otherwise, send a \texttt{QUERY(id)} message to the first node in \texttt{Unknown} and remove it from \texttt{Unknown}. (Continue DFS traversal by querying the next unknown neighbor.)
+    \end{itemize}
+    \item If \texttt{MyRoot} is not \texttt{id}, ignore the message. (The node has changed tree membership after sending the \texttt{QUERY} message.)
+\end{enumerate}
+
+\subsection{Initialization and Termination}
+To initiate the tree construction, a node \(i\) first checks if \texttt{Parent} is \texttt{null}. If so, it sends a \texttt{QUERY(i)} message to itself. (This is an internal action and does not involve actual communication.)
+
+The tree construction terminates when the root node confirms that all its neighbors have been visited. This occurs when the \texttt{Unknown} list becomes empty. At this point, the root node designates itself as the root of the tree and finalizes the tree construction. To disseminate this information, the root node can propagate a completion signal throughout the spanning tree.

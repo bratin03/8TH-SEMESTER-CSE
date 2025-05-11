@@ -1,0 +1,75 @@
+\section{Problem 5}\label{prob5}
+
+In this problem, we modify the Ricart-Agrawala algorithm to design a permission-based distributed mutual exclusion algorithm that requires zero messages in the best case.
+
+\subsection{Best-Case Scenario}
+The best case occurs when a single process repeatedly requests access to the critical section while no other process makes a request. The key idea is that once a process \( p_i \) has received a \texttt{REPLY} message from another process \( p_j \), it does not need to send a \texttt{REQUEST} message to \( p_j \) again unless \( p_i \) has sent a \texttt{REPLY} message to \( p_j \) in response to a \texttt{REQUEST}. Consequently, if only one process requests the critical section, it initially needs to obtain permission from all other processes. However, subsequent requests will not require any additional messages since permission has already been acquired.
+
+Additionally, if a subset of processes requests the critical section, only the processes within the subset need to communicate with each other once all other processes have granted permission at least once to each process in the subset.
+
+\subsection{Worst-Case Scenario}
+The worst case arises when all processes frequently request access to the critical section. In this scenario, any process \( p_i \) cannot hold permission indefinitely, as it must send \texttt{REPLY} messages to other processes upon receiving their \texttt{REQUEST} messages. As a result, each new request necessitates sending a \texttt{REQUEST} message to all other processes and waiting for their \texttt{REPLY} messages. This scenario requires \( 2(N-1) \) messages per request in the worst case.
+
+\subsection{Process State Management}
+Each node maintains a logical clock updated following the Lamport clock rules, along with the following data structures:
+
+\begin{itemize}
+    \item \textbf{Request Queue:} A queue of requests for the critical section, ordered by logical timestamps.
+    \item \textbf{Permission Array:} A boolean array of size \( N \), where the \( i \)-th element is \texttt{true} if process \( p_i \) has granted permission to the current process and \texttt{false} otherwise. Initially, all elements are set to \texttt{false} except for the current process's index, which is \texttt{true}.
+    \item \textbf{My Requests Queue:} A list of requests sent by the current process, ordered by logical timestamps.
+\end{itemize}
+
+\subsection{Message Types}
+The system uses two types of messages:
+\begin{itemize}
+    \item \texttt{REQUEST(i, ts)}: Sent by process \( p_i \) to request access to the critical section, where \( ts \) is the logical timestamp.
+    \item \texttt{REPLY(i)}: Sent by process \( p_i \) to grant permission to another process.
+\end{itemize}
+
+\subsection{Requesting the Critical Section}
+To request critical section access, process \( p_i \) follows these steps:
+
+\begin{enumerate}
+    \item If the request queue is empty and all elements of the permission array are \texttt{true}, enter the critical section (no communication needed).
+    \item Otherwise, send a \texttt{REQUEST(i, ts)} message to all processes for which the corresponding element of the permission array is \texttt{false}. Add the request to both the \texttt{Request Queue} and \texttt{My Requests Queue}. It will eventually enter the critical section when all elements of the permission array are \texttt{true}.
+\end{enumerate}
+
+\subsection{Handling a \texttt{REQUEST} Message}
+Upon receiving a \texttt{REQUEST(i, ts)} message from process \( p_i \), process \( p_j \) executes the following steps:
+
+\begin{enumerate}
+    \item If \( p_j \) is not interested in the critical section (i.e., \texttt{My Requests Queue} is empty and it is not currently in the critical section), it:
+    \begin{itemize}
+        \item Sends a \texttt{REPLY(j)} message to \( p_i \).
+        \item Sets the \( i \)-th element of the permission array to \texttt{false}.
+    \end{itemize}
+    
+    \item If \( p_j \) is currently in the critical section, it adds the request to the \texttt{Request Queue} for later processing.
+    
+    \item If \( p_j \) is interested in the critical section (but not currently executing), it compares the timestamp of the received request with the request at the front of \texttt{My Requests Queue}:
+    \begin{itemize}
+        \item If the received request has a smaller timestamp, \( p_j \) does the following:
+        \begin{itemize}
+            \item Sends a \texttt{REPLY(j)} message to \( p_i \).
+            \item Sets the \( i \)-th element of the permission array to \texttt{false}.
+            \item If the \( i \)-th element of the permission array was previously \texttt{true}, it also sends a \texttt{REQUEST(j, ts\_{\text{front}})} message to \( p_i \) to inform \( p_i \) of its own request, where \texttt{ts\_{\text{front}}} is the timestamp of the request at the front of \texttt{My Requests Queue}.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+
+\subsection{Handling a \texttt{REPLY} Message} \label{prob5:reply}
+Upon receiving a \texttt{REPLY(j)} message from process \( p_j \), process \( p_i \):
+\begin{enumerate}
+    \item Sets the \( j \)-th element of the permission array to \texttt{true}.
+    \item If a request from \(p_i\) is present in the \texttt{My Requests Queue}, it checks if all elements of the permission array are \texttt{true}. If so, it enters the critical section and removes its request from both the \texttt{Request Queue} and \texttt{My Requests Queue}.
+    \item Otherwise, it waits for more \texttt{REPLY} messages.
+\end{enumerate}
+
+\subsection{Releasing the Critical Section}
+To release the critical section, process \( p_i \):
+\begin{enumerate}
+    \item Sends a \texttt{REPLY(i)} message to all processes in the \texttt{Request Queue}.
+    \item Sets the corresponding elements of the permission array to \texttt{false}.
+    \item Removes the requests from the \texttt{Request Queue}.
+\end{enumerate}

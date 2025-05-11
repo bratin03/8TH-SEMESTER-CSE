@@ -1,0 +1,65 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath} 
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{setspace}
+\usepackage{fancyhdr} % For custom headers and footers
+
+% Set tighter page margins
+\geometry{top=0.75in, bottom=0.75in, left=0.75in, right=0.75in}
+
+% Reduce line spacing
+\setstretch{0.9}
+
+% Customize header and footer
+\pagestyle{fancy}
+\fancyhf{} % Clear all headers and footers
+
+% Add custom header
+\fancyhead[L]{\textbf{Distributed Systems (CS60064)}} % Left-aligned subject name and number
+
+% Add custom footer
+\fancyfoot[L]{\textbf{Bratin Mondal}} % Left-aligned student name
+\fancyfoot[R]{\textbf{Roll No: 21CS10016}} % Right-aligned roll number
+\fancyfoot[C]{\thepage} % Center-aligned page number
+
+\sloppy
+
+\begin{document}
+
+% Header for the first page
+\begin{center}
+    \textbf{\huge Assignment 1} \\[1em]
+    \textbf{Student Name:} Bratin Mondal \\[0.5em]
+    \textbf{Roll Number:} 21CS10016 \\[0.5em]
+    \textbf{Course Name:} Distributed Systems \\[0.5em]
+    \textbf{Course Number:} CS60064
+\end{center}
+
+% Include Problem 1
+\input{Q/Q1.tex}
+
+% Include Problem 2
+\input{Q/Q2.tex}
+
+% Include Problem 3
+\input{Q/Q3.tex}
+
+% Include Problem 4
+\input{Q/Q4.tex}
+
+% Include Problem 5
+\input{Q/Q5.tex}
+
+% Include Problem 6
+\input{Q/Q6.tex}
+
+% Include Problem 7
+\input{Q/Q7.tex}
+
+% Include Problem 8
+\input{Q/Q8.tex}
+
+\end{document}

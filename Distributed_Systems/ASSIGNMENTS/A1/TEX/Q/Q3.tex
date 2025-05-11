@@ -1,0 +1,75 @@
+\section{Problem 3}\label{prob3}
+
+Each node in the network stores the following information:
+\begin{itemize}
+    \item \textbf{Parent:} Initialized to \texttt{null}. (The parent node of the current node.)
+    \item \textbf{Children:} Initialized to an empty list. (The list of child nodes of the current node.)
+    \item \textbf{Forward Count:} Initialized to \texttt{0}. (The number of neighbors to whom the current node has forwarded a message asking to be its child.)
+    \item \textbf{Reply Count:} Initialized to \texttt{0}. (The number of neighbors that have replied to the current node's request to be its child.)
+    \item \textbf{ACK Count:} Initialized to \texttt{0}. (The number of children \(c\) of the current node that have informed that the spanning tree construction is complete for the subtree rooted at \(c\).)
+\end{itemize}
+
+Apart from the above information, each node also maintains a list of its neighbors. The neighbors are the nodes to which the current node is directly connected and can communicate with.
+
+There are four types of messages in the protocol: \texttt{ASK}, \texttt{CHILD}, \texttt{REJ}, and \texttt{ACK}. Each node follows the rules below for handling each message type:
+
+\subsection{Message Handling Rules}
+
+\paragraph{On receiving an \texttt{ASK} message:}
+\begin{enumerate}
+    \item If the \texttt{Parent} is not \texttt{null}: 
+    \begin{itemize}
+        \item Send a \texttt{REJ} message to the sender. (The node is already connected to a parent. So, it rejects the request.)
+    \end{itemize}
+    \item Otherwise:
+    \begin{itemize}
+        \item Set the \texttt{Parent} to the sender. (The node accepts the sender as its parent.)
+        \item Send a \texttt{CHILD} message to the sender. (The node informs the sender that it has accepted it as its child.)
+        \item Send \texttt{ASK} messages to all other neighbors, excluding the sender. (The node asks all other neighbors to be its children.)
+        \item Set \texttt{Forward Count} to the number of neighbors to whom the \texttt{ASK} message was sent. (The node sets the number of neighbors to which it has asked to be its children.)
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{On receiving a \texttt{REJ} message:}
+\begin{enumerate}
+    \item Increment the \texttt{Reply Count} by \texttt{1}. (The node received a rejection from a neighbor.)    
+    \item If \(\texttt{Reply Count} = \texttt{Forward Count}\) and \(\texttt{ACK Count} = \texttt{Children.size()}\): (All neighbors have replied in response to the \texttt{ASK} message, and all children have informed that the spanning tree construction is complete for the subtree rooted at them.)
+    \begin{itemize}
+        \item Send an \texttt{ACK} message to the parent. (Send an acknowledgment to the parent indicating that the spanning tree construction is complete for the subtree rooted at the current node.)
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{On receiving a \texttt{CHILD} message:}
+\begin{enumerate}
+    \item Add the sender to the \texttt{Children} list. (The node accepted a child.)
+    \item Increment the \texttt{Reply Count} by \texttt{1}.
+    \item If \(\texttt{Reply Count} = \texttt{Forward Count}\) and \(\texttt{ACK Count} = \texttt{Children.size()}\): (All neighbors have replied in response to the \texttt{ASK} message, and all children have informed that the spanning tree construction is complete for the subtree rooted at them.)
+    \begin{itemize}
+        \item Send an \texttt{ACK} message to the parent. (Send an acknowledgment to the parent indicating that the spanning tree construction is complete for the subtree rooted at the current node.)
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{On receiving an \texttt{ACK} message:}
+\begin{enumerate}
+    \item Increment the \texttt{ACK Count} by \texttt{1}. (The node received an acknowledgment from a child indicating that the spanning tree construction is complete for the subtree rooted at the child.)
+    \item If \(\texttt{Reply Count} = \texttt{Forward Count}\) and \(\texttt{ACK Count} = \texttt{Children.size()}\): (All neighbors have replied in response to the \texttt{ASK} message, and all children have informed that the spanning tree construction is complete for the subtree rooted at them.)
+    \begin{itemize}
+        \item Send an \texttt{ACK} message to the parent. (Send an acknowledgment to the parent indicating that the spanning tree construction is complete for the subtree rooted at the current node.)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Initialization and Termination Conditions}
+
+\paragraph{Initialization:}
+The root node initializes the protocol by performing the following steps:
+\begin{itemize}
+    \item Send an \texttt{ASK} message to all its neighbors.
+    \item Set its \texttt{Parent} to itself. (This ensures the root does not accept any other node as its parent.)
+    \item Set \texttt{Forward Count} to the number of neighbors to whom the \texttt{ASK} message was sent.
+\end{itemize}
+Note: The root node does not add itself to its \texttt{Children} list, avoiding unnecessary self-messages.
+
+\paragraph{Termination:}
+The protocol terminates when the root node satisfies the following condition:
+\[\texttt{Reply Count} = \texttt{Forward Count} \quad \text{and} \quad \texttt{ACK Count} = \texttt{Children.size()}.\]
+This condition ensures that all neighbors have replied in response to the \texttt{ASK} message, and all children have informed that the spanning tree construction is complete for the subtree rooted at them.

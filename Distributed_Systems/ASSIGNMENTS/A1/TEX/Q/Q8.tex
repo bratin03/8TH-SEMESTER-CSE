@@ -1,0 +1,74 @@
+\section{Problem 8}\label{prob8}
+
+For this problem, we will utilize the concept that a request made by a node will be forwarded along the path directed by the \texttt{to\_token} value. Each node will make requests to the its parent, either for itself or on behalf of its subtree. The root is the node that holds the token. To allow access to the critical section, the token will be forwarded to the node with the earliest request in the queue. 
+
+Additionally, depending on the forwarding of the token, the edges of the spanning tree will be reversed to point to the token holder. A node that holds the token does not enter the critical section if it has a request in \texttt{request\_q} with an earlier timestamp from its subtree. In such a case, the node forwards the token to the appropriate node and sends a new request to the current root.
+
+Each node maintains the following queue and variables:
+\begin{itemize}
+    \item \texttt{request\_q}: A queue storing requests for the critical section, ordered by timestamps, ensuring a total ordering (e.g., using Lamport's logical clock).
+    \item \texttt{is\_requested}: A boolean variable set to \texttt{true} if the node has requested access to the critical section for itself or its subtree to is parent. (To avoid multiple requests to the parent.)
+    \item \texttt{has\_token}: A boolean variable indicating if the node holds the token. This can be omitted since the node with the token is the one where \texttt{to\_token} equals itself.
+\end{itemize}
+
+\subsection{Message Types}
+The algorithm uses two types of messages:
+
+\begin{itemize}
+    \item \texttt{REQUEST(ts,i)}: Sent to \texttt{to\_token} to request access to the critical section for itself or its subtree with timestamp \texttt{ts} and node ID \texttt{i}.
+    \item \texttt{TOKEN}: Sent to another node to pass the token.
+\end{itemize}
+
+\subsection{Handling \texttt{REQUEST} Messages}
+When a node $i$ receives a \texttt{REQUEST(ts,j)} message from its child $j$:
+\begin{enumerate}
+    \item If $i$ is the root:
+        \begin{itemize}
+            \item If $i$ is not executing the critical section and its \texttt{request\_q} is empty, it sends a \texttt{TOKEN} message to $j$ and sets \texttt{to\_token} to $j$. (Pass the token to the only requester and reverse the edge.)
+            \item If $i$ is executing the critical section, it adds $j$'s request to \texttt{request\_q}. (Put the request in the queue for later processing.)
+        \end{itemize}
+    \item Otherwise (if $i$ is not the root):
+        \begin{itemize}
+            \item $i$ adds $j$'s request to its \texttt{request\_q}. (Put the request in the queue)
+            \item If \texttt{is\_requested} is \texttt{false}, $i$ sends a \texttt{REQUEST(ts,i)} message to its \texttt{to\_token} and sets \texttt{is\_requested} to \texttt{true}. (Make a request to the parent if no request has been made yet.)
+        \end{itemize}
+\end{enumerate}
+
+Every node sends a \texttt{REQUEST} message to its parent when requesting access to the critical section, either for itself or its subtree. This mechanism helps merge multiple requests from the same subtree into a single request.
+
+\subsection{Handling \texttt{TOKEN} Messages}
+When a node $i$ receives a \texttt{TOKEN} message from node $j$:
+\begin{enumerate}
+    \item It removes the first request from \texttt{request\_q}, if it is from $i$ itself, it sets \texttt{to\_token} to $i$, and enters the critical section. (If the first request is from itself, enter the critical section.) For releasing the token, follow the steps mentioned in \Cref{release}. Otherwise, if the first request is from a child \(k\), send a \texttt{TOKEN} message to \(k\) and set \texttt{to\_token} to \(k\). (Forward the token to the first requester in the queue.)
+    \item Now, if \texttt{request\_q} is empty, it sets \texttt{is\_requested} to \texttt{false}. (No more requests are pending.)
+    \item Otherwise, it sends a \texttt{REQUEST} message to its \texttt{to\_token} (To whom the token was forwarded) and sets \texttt{is\_requested} to \texttt{true}. (If any requests are pending, submit a new request to the new parent.)
+\end{enumerate}
+
+\subsection{Entering the Critical Section}
+To enter the critical section, a node:
+\begin{enumerate}
+    \item Checks if it holds the token and the \texttt{request\_q} is empty.
+        \begin{itemize}
+            \item If both conditions are met, it enters the critical section.
+            \item Otherwise, it adds its request to \texttt{request\_q}. If the flag \texttt{is\_requested} is \texttt{false}, it sends a \texttt{REQUEST} message to its \texttt{to\_token} and sets \texttt{is\_requested} to \texttt{true}. It will enter the critical section when the token is received and its own request is at the front of the \texttt{request\_q}.
+        \end{itemize}
+\end{enumerate}
+
+\subsection{Releasing the Critical Section} \label{release}
+To release the critical section:
+\begin{enumerate}
+    \item If \texttt{request\_q} is non-empty: (Pending requests are present)
+        \begin{itemize}
+            \item The node sends a \texttt{TOKEN} message to the first node in \texttt{request\_q} and updates \texttt{to\_token} to that corresponding node and removes the first request from \texttt{request\_q}. (Forward the token to the first requester in the queue.)
+        \end{itemize}
+    \item After the previous step, if \texttt{request\_q} is still non-empty: (More requests are pending)
+        \begin{itemize}
+            \item The node sends a \texttt{REQUEST} message to its new parent and sets \texttt{is\_requested} to \texttt{true}. (Make a request to the parent if any requests are still pending.)
+        \end{itemize}
+\end{enumerate}
+
+
+\noindent \textbf{Note:} The algorithm assumes that each node processes different types of messages in a FIFO order, ensuring that no two messages are interleaved during processing. For instance, if a process is currently handling a \texttt{TOKEN} message and receives a \texttt{REQUEST} message simultaneously, it will queue the \texttt{REQUEST} message and process it only after completing the \texttt{TOKEN} message.
+
+\subsection{Message Complexity}
+In the best-case scenario, a node may already possess the token and can enter the critical section without exchanging any messages. However, in the general case, the average distance between any two nodes in a tree is \(O(\log n)\), where \(n\) represents the number of nodes. For each request, the request must first propagate to the root, and then the token must travel back to the requester. Consequently, the average message complexity for each request is \(O(\log n)\).

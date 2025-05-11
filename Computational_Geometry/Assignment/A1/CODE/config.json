@@ -1,0 +1,10 @@
+{
+  "polygon_points": [
+    [2, 1],
+    [3, 4],
+    [5, 3],
+    [6, 1],
+    [4, -2]
+  ],
+  "save_path": "output/convex_polygon_plot.png"
+}
